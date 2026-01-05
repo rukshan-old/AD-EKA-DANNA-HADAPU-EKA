@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="SOLO LEVELING: Professional Session Manager for WhatsApp automation." />
+  <meta name="keywords" content="SOLO LEVELING, WhatsApp bot, session manager, automation" />
+  <title>SOLO LEVELING V1 Professional Session Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" />
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    :root {
+      --primary: #4B0082;
+      --secondary: #FF69B4;
+      --glass: rgba(75, 0, 130, 0.4);
+      --bg-color: linear-gradient(135deg, #4B0082, #8A2BE2);
+      --text-color: #FFD1FF;
+      --overlay: rgba(0, 0, 0, 0.7);
+      --success-glow: #FF69B4;
+    }
+
+    [data-theme="light"] {
+      --primary: #9370DB;
+      --secondary: #FF69B4;
+      --glass: rgba(147, 112, 219, 0.3);
+      --bg-color: linear-gradient(135deg, #9370DB, #DA70D6);
+      --text-color: #FFD1FF;
+      --overlay: rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      min-height: 100vh;
+      position: relative;
+      transition: background 0.8s ease, color 0.4s ease;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    #background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--primary);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid var(--secondary);
+      border-top: 6px solid transparent;
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    #loader img {
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 15px var(--secondary);
+      animation: pulse 2s infinite;
+    }
+
+    #loader p {
+      margin-top: 1.5rem;
+      font-size: 1.5rem;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--secondary);
+      text-shadow: 0 0 10px var(--secondary);
+    }
+
+    #deploy-ad {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--overlay);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #deploy-ad.show {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ad-content {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      padding: 2rem;
+      border-radius: 14px;
+      text-align: center;
+      max-width: 90%;
+      width: 400px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 18px var(--secondary);
+      animation: pulse 2s infinite;
+    }
+
+    .ad-content img {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 12px var(--secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .ad-content h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      color: var(--secondary);
+      text-shadow: 0 0 6px var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    .ad-content p {
+      font-size: 1rem;
+      margin-bottom: 1.2rem;
+      color: var(--text-color);
+    }
+
+    .ad-content ul {
+      text-align: left;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      padding-left: 1.8rem;
+      color: var(--text-color);
+    }
+
+    .ad-content a {
+      padding: 12px 24px;
+      background: var(--glass);
+      color: var(--secondary);
+      text-decoration: none;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      border-radius: 30px;
+      border: 2px solid var(--secondary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px var(--secondary);
+      margin: 0.6rem;
+    }
+
+    .ad-content a:hover {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 18px var(--secondary);
+    }
+
+    #skip-btn {
+      padding: 10px 24px;
+      background: #333;
+      color: var(--text-color);
+      border: none;
+      border-radius: 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      cursor: not-allowed;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    #skip-btn.active {
+      background: var(--secondary);
+      cursor: pointer;
+    }
+
+    #skip-btn.active:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    canvas#particleCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      opacity: 0.4;
+    }
+
+    nav {
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      border-bottom: 2px solid var(--secondary);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    nav .logo {
+      font-size: 1.8rem;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--secondary);
+      text-shadow: 0 0 6px var(--secondary);
+      transition: transform 0.3s ease;
+    }
+
+    nav .logo:hover {
+      transform: scale(1.1);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li a {
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 0.25rem 0;
+      border-bottom: 2px solid transparent;
+      color: var(--text-color);
+      transition: border-color 0.3s ease, color 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a:focus {
+      border-bottom-color: var(--secondary);
+      color: var(--secondary);
+      outline: none;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .hamburger div {
+      width: 24px;
+      height: 3px;
+      background-color: var(--secondary);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger.active div:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+
+    .hamburger.active div:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger.active div:nth-child(3) {
+      transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 70%;
+      max-width: 320px;
+      height: 100vh;
+      background: var(--glass);
+      backdrop-filter: blur(15px);
+      padding: 4rem 2rem;
+      transition: right 0.35s ease;
+      z-index: 2000;
+      border-left: 2px solid var(--secondary);
+    }
+
+    .mobile-menu.open {
+      right: 0;
+    }
+
+    .mobile-menu a {
+      color: var(--text-color);
+      font-weight: 600;
+      font-size: 1.1rem;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+      border-radius: 10px;
+    }
+
+    .mobile-menu a:hover,
+    .mobile-menu a:focus {
+      color: var(--secondary);
+      background: rgba(0, 183, 235, 0.2);
+      transform: translateX(12px);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .audio-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 10;
+    }
+
+    .audio-btn {
+      font-size: 1.2rem;
+      background: var(--glass);
+      border: 1px solid var(--secondary);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .audio-btn:hover {
+      color: var(--secondary);
+      transform: scale(1.15);
+      box-shadow: 0 0 10px var(--secondary);
+    }
+
+    .volume-slider {
+      width: 100px;
+      accent-color: var(--secondary);
+    }
+
+    .song-select {
+      background: var(--glass);
+      border: 1px solid var(--secondary);
+      color: var(--text-color);
+      padding: 0.5rem;
+      border-radius: 8px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .song-select:hover {
+      color: var(--secondary);
+      box-shadow: 0 0 10px var(--secondary);
+    }
+
+    .hero {
+      padding-top: 6rem;
+      padding-bottom: 3rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-image: url('');
+      background-size: cover;
+      background-position: center;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0, 183, 235, 0.2), transparent);
+      z-index: -1;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-family: 'Montserrat', sans-serif;
+      color: var(--secondary);
+      text-shadow: 0 0 8px var(--secondary);
+      margin-bottom: 1.5rem;
+      min-height: 2.4rem;
+    }
+
+    .hero p {
+      font-size: 1.5rem;
+      color: var(--text-color);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards 3s;
+      max-width: 600px;
+    }
+
+    .category-selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .category-btn {
+      background: var(--glass);
+      border: 2px solid var(--secondary);
+      padding: 0.8rem 1.8rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      color: var(--secondary);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px var(--secondary);
+      text-decoration: none;
+    }
+
+    .category-btn:hover,
+    .category-btn:focus {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 18px var(--secondary);
+      outline: none;
+    }
+
+    .btn-primary {
+      background: var(--glass);
+      border: 2px solid var(--secondary);
+      padding: 1rem 2.5rem;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.2rem;
+      color: var(--secondary);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 12px var(--secondary);
+      user-select: none;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 18px var(--secondary);
+      outline: none;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2.5rem;
+      padding: 3rem 1rem;
+    }
+
+    .feature {
+      background: var(--glass);
+      padding: 2.5rem;
+      border-radius: 14px;
+      box-shadow: 0 0 12px var(--secondary);
+      transition: all 0.3s ease;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .feature:hover,
+    .feature:focus-within {
+      transform: scale(1.05);
+      box-shadow: 0 0 18px var(--secondary);
+      outline: none;
+    }
+
+    .feature i {
+      font-size: 3rem;
+      color: var(--secondary);
+      margin-bottom: 1.2rem;
+    }
+
+    .feature h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.6rem;
+      color: var(--secondary);
+      margin-bottom: 0.8rem;
+    }
+
+    .feature p {
+      font-size: 1.1rem;
+      color: var(--text-color);
+    }
+
+    .btn-link {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.8rem;
+      background: var(--glass);
+      color: var(--secondary);
+      border-radius: 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      border: 1px solid var(--secondary);
+      transition: all 0.3s ease;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 0 12px var(--secondary);
+      text-decoration: none;
+      align-self: flex-start;
+    }
+
+    .btn-link:hover,
+    .btn-link:focus {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 18px var(--secondary);
+      outline: none;
+    }
+
+    section.download,
+    section.setup-guide,
+    section.bot-commands,
+    section.markdown,
+    section.contact,
+    section.about {
+      background: var(--glass);
+      padding: 4rem 2.5rem;
+      border-radius: 14px;
+      max-width: 1000px;
+      margin: 4rem auto;
+      box-shadow: 0 0 12px var(--secondary);
+      text-align: center;
+    }
+
+    section.download h2,
+    section.setup-guide h2,
+    section.bot-commands h2,
+    section.markdown h2,
+    section.contact h2,
+    section.about h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.6rem;
+      color: var(--secondary);
+      text-shadow: 0 0 8px var(--secondary);
+      margin-bottom: 1.2rem;
+    }
+
+    section.download p,
+    section.setup-guide p,
+    section.bot-commands p,
+    section.markdown p,
+    section.contact p,
+    section.about p {
+      color: var(--text-color);
+      margin-bottom: 2.5rem;
+      font-size: 1.2rem;
+    }
+
+    .bot-image-container {
+      margin-bottom: 2rem;
+    }
+
+    .bot-image {
+      width: 180px;
+      height: 180px;
+      border-radius: 15px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 15px var(--secondary);
+      transition: all 0.3s ease;
+    }
+
+    .bot-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--secondary);
+    }
+
+    .about-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 15px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 15px var(--secondary);
+      transition: all 0.3s ease;
+      margin-bottom: 2rem;
+    }
+
+    .about-image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px var(--secondary);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-links a {
+      padding: 0.8rem 1.8rem;
+      background: var(--glass);
+      color: var(--secondary);
+      border-radius: 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      border: 1px solid var(--secondary);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .contact-links a:hover,
+    .contact-links a:focus {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 18px var(--secondary);
+      outline: none;
+    }
+
+    .bot-commands-box,
+    .markdown-box {
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--glass);
+      border: 1px solid var(--secondary);
+      border-radius: 14px;
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .bot-commands-box pre,
+    .markdown-box pre {
+      background: #1A3C4D;
+      padding: 1.5rem;
+      border-radius: 12px;
+      overflow-x: auto;
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .copy-btn {
+      padding: 12px 28px;
+      background: var(--glass);
+      color: var(--secondary);
+      border: 1px solid var(--secondary);
+      border-radius: 30px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.8rem;
+    }
+
+    .copy-btn:hover {
+      transform: scale(1.08);
+      background: var(--secondary);
+      color: var(--primary);
+      box-shadow: 0 0 15px var(--secondary);
+    }
+
+    .copy-btn.copied {
+      background: var(--success-glow);
+      box-shadow: 0 0 15px var(--success-glow);
+    }
+
+    .copy-btn:disabled {
+      background: #333;
+      cursor: not-allowed;
+    }
+
+    section.setup-guide .step {
+      margin-bottom: 3rem;
+      text-align: left;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    section.setup-guide .step h3 {
+      margin-bottom: 0.6rem;
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+
+    section.setup-guide .step p {
+      margin-bottom: 1rem;
+      color: var(--text-color);
+      font-size: 1.1rem;
+    }
+
+    .code-wrapper {
+      position: relative;
+      margin-bottom: 1.8rem;
+      border-radius: 8px;
+      background: #1A3C4D;
+      padding-top: 2.8rem;
+    }
+
+    .code-wrapper pre {
+      margin: 0;
+      padding: 1.2rem 1.8rem;
+      font-family: 'Source Code Pro', monospace;
+      font-size: 1rem;
+      color: var(--text-color);
+      white-space: pre;
+      overflow-x: auto;
+      border-radius: 0 0 8px 8px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: var(--glass);
+      border: 1px solid var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .theme-toggle i {
+      font-size: 1.4rem;
+      color: var(--secondary);
+    }
+
+    .back-to-top {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: var(--glass);
+      border: 1px solid var(--secondary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .back-to-top.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .back-to-top:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    .back-to-top i {
+      font-size: 1.4rem;
+      color: var(--secondary);
+    }
+
+    .visitor-counter {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: var(--glass);
+      padding: 0.8rem 1.4rem;
+      border-radius: 12px;
+      border: 1px solid var(--secondary);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      color: var(--secondary);
+      text-shadow: 0 0 8px var(--secondary);
+      z-index: 10;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-color);
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem;
+      padding: 4rem 1rem;
+      background: var(--glass);
+      border-top: 1px solid var(--secondary);
+    }
+
+    footer a {
+      margin: 0 0.6rem;
+      color: var(--secondary);
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    footer a:hover,
+    footer a:focus {
+      color: var(--primary);
+      box-shadow: 0 0 12px var(--secondary);
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 12px var(--secondary); }
+      50% { box-shadow: 0 0 18px var(--secondary); }
+      100% { box-shadow: 0 0 12px var(--secondary); }
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        display: none;
+      }
+
+      .hamburger {
+        display: flex;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+      }
+
+      .hero p {
+        font-size: 1.2rem;
+        max-width: 90%;
+      }
+
+      section.download h2,
+      section.setup-guide h2,
+      section.bot-commands h2,
+      section.markdown h2,
+      section.contact h2,
+      section.about h2 {
+        font-size: 2rem;
+      }
+
+      .feature h3 {
+        font-size: 1.4rem;
+      }
+
+      .audio-controls {
+        bottom: 10px;
+        left: 10px;
+      }
+
+      .volume-slider {
+        width: 80px;
+      }
+
+      .ad-content {
+        padding: 1.5rem;
+        width: 90%;
+      }
+
+      .ad-content h2 {
+        font-size: 1.4rem;
+      }
+
+      .ad-content img {
+        width: 100px;
+        height: 100px;
+      }
+
+      .visitor-counter {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+      }
+
+      .bot-image,
+      .about-image {
+        width: 140px;
+        height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <div class="spinner"></div>
+    <img src="https://files.catbox.moe/r06l0v.jpg" alt="SOLO LEVELING Logo" />
+    <p>𝘓𝘖𝘈𝘋𝘐𝘕𝘎 𝘚𝘖𝘓𝘖 𝘓𝘌𝘝𝘌𝘓𝘐𝘕𝘎 𝘞𝘌𝘉.....☁</p>
+  </div>
+
+  <video id="background-video" autoplay loop muted playsinline>
+    <source src="https://files.catbox.moe/9bt2lh.mp4" type="video/mp4">
+  </video>
+
+  <canvas id="particleCanvas"></canvas>
+
+  <nav role="navigation" aria-label="Primary Navigation">
+    <div class="logo" aria-label="SOLO LEVELING V1">𝙎𝙊𝙇𝙊 𝙇𝙀𝙑𝙀𝙇𝙄𝙉𝙂 𝙑1 𝙒𝙀𝘽</div>
+    <ul>
+      <li><a href="#hero" tabindex="0">𝗛𝗢𝗠𝗘</a></li>
+      <li><a href="#features" tabindex="0">𝗙𝗘𝗔𝗧𝗨𝗥𝗘𝗦</a></li>
+      <li><a href="#download" tabindex="0">𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗</a></li>
+      <li><a href="#setup" tabindex="0">𝗦𝗘𝗧𝗨𝗣 𝗚𝗨𝗜𝗗𝗘</a></li>
+      <li><a href="#commands" tabindex="0">𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦</a></li>
+      <li><a href="#deploy" tabindex="0">𝗪𝗢𝗥𝗞𝗙𝗟𝗢𝗪</a></li>
+      <li><a href="#about" tabindex="0">𝗔𝗕𝗢𝗨𝗧</a></li>
+      <li><a href="#contact" tabindex="0">𝗖𝗢𝗡𝗧𝗔𝗖𝗧</a></li>
+    </ul>
+    <button class="hamburger" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobile-menu">
+      <div></div>
+      <div></div>
+      <div></div>
+    </button>
+  </nav>
+
+  <div id="mobile-menu" class="mobile-menu" role="menu" aria-hidden="true">
+    <a href="#hero" role="menuitem" tabindex="-1"><i class="fas fa-home"></i>𝗛𝗢𝗠𝗘</a>
+    <a href="#features" role="menuitem" tabindex="-1"><i class="fas fa-star"></i>𝗙𝗘𝗔𝗧𝗨𝗥𝗘𝗦</a>
+    <a href="#download" role="menuitem" tabindex="-1"><i class="fas fa-download"></i> 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗</a>
+    <a href="#setup" role="menuitem" tabindex="-1"><i class="fas fa-cog"></i> 𝗦𝗘𝗧𝗨𝗣 𝗚𝗨𝗜𝗗𝗘</a>
+    <a href="#commands" role="menuitem" tabindex="-1"><i class="fas fa-terminal"></i> 𝗖𝗢𝗠𝗠𝗔𝗡𝗗𝗦</a>
+    <a href="#deploy" role="menuitem" tabindex="-1"><i class="fas fa-code"></i> 𝗪𝗢𝗥𝗞𝗙𝗟𝗢𝗪</a>
+    <a href="#about" role="menuitem" tabindex="-1"><i class="fas fa-user"></i> 𝗔𝗕𝗢𝗨𝗧</a>
+    <a href="#contact" role="menuitem" tabindex="-1"><i class="fas fa-envelope"></i> 𝗖𝗢𝗡𝗧𝗔𝗖𝗧</a>
+  </div>
+
+  <div class="audio-controls">
+    <button class="audio-btn play-btn" aria-label="Play audio">
+      <i class="fas fa-play"></i>
+    </button>
+    <button class="audio-btn pause-btn" aria-label="Pause audio">
+      <i class="fas fa-pause"></i>
+    </button>
+    <button class="audio-btn stop-btn" aria-label="Stop audio">
+      <i class="fas fa-stop"></i>
+    </button>
+    <button class="audio-btn theme-toggle-btn" aria-label="Toggle theme">
+      <i class="fas fa-moon"></i>
+    </button>
+    <input type="range" class="volume-slider" min="0" max="1" step="0.01" value="0.5" aria-label="Volume control" />
+    <select id="song-select" class="song-select" aria-label="Select background music">
+      <option value="https://files.catbox.moe/s5eivo.mp3">Song 1</option>
+      <option value="https://files.catbox.moe/kxb36b.mp3" selected>Song 2</option>
+      <option value="https://files.catbox.moe/lv31gq.mp3">Song 3</option>
+    </select>
+  </div>
+
+  <audio id="background-audio" loop>
+    <source src="https://files.catbox.moe/kxb36b.mp3" type="audio/mp3">
+  </audio>
+
+  <div class="visitor-counter" id="visitor-counter">𝚅𝙸𝚂𝙸𝚃𝙾𝚁𝚂:<span id="visitor-count">0</span></div>
+
+  <header id="hero" class="hero container" role="banner" aria-label="Welcome Section">
+    <h1 id="typing-text"></h1>
+    <p>The SOLO LEVELING main website has all the tools and resources you need to deploy WhatsApp bots in one place 🙇‍♂️.</p>
+    <a href="https://whatsapp.com/channel/0029VbAWWH9BFLgRMCXVlU38" target="_blank" class="btn-primary" aria-label="Join Now">
+      ᴊᴏɪɴɢ ɴᴏᴡ <i class="fas fa-arrow-right" aria-hidden="true"></i>
+    </a>
+  </header>
+
+  <main class="container" role="main">
+    <section id="bot-image" class="bot-commands" aria-label="Bot Image Section">
+      <h2>SOLO LEVELING V1 SIMPLE BOT</h2>
+      <p>FROK & DEPLOY YOUR BOTS .</p>
+      <div class="bot-image-container">
+        <img src="https://files.catbox.moe/f19lw7.jpeg" alt="SOLO LEVELING V1 SIMPLE BOT" class="bot-image">
+      </div>
+    </section>
+
+    <section id="features" aria-label="Features Section">
+      <h2> 🌍    𝙁𝙀𝘼𝙏𝙐𝙍𝙀𝙎 </h2>
+      <div class="features-grid">
+        <article class="feature" tabindex="0">
+          <i class="fas fa-qrcode"></i>
+          <h3>𝘘𝘙 𝘊𝘖𝘋𝘌 𝘎𝘌𝘕𝘌𝘙𝘈𝘛𝘖𝘙</h3>
+          <p>Create and manage QR codes seamlessly for your sessions and devices.</p>
+          <a href="https://solo-leveling-mine-web.netlify.app/" class="btn-link" aria-label="Go to QR Code Generator">𝙶𝙾 𝚃𝙾 𝚀𝚁 𝙲𝙾𝙳𝙴 [𝙻𝙸𝙽𝙺 𝚆𝙷𝙰𝚂𝚃𝙰𝙿𝙿]</a>
+        </article>
+        <article class="feature" tabindex="0">
+          <i class="fas fa-handshake"></i>
+          <h3>𝘗𝘈𝘐𝘙𝘐N𝘎 ( Easy )</h3>
+          <p>Connect devices effortlessly with secure and instant pairing codes.</p>
+          <a href="https://solo-leveling-mine-web.netlify.app/" class="btn-link" aria-label="Go to Pairing">𝙶𝙾 𝚃𝙾 𝙿𝙰𝙸𝚁𝙸𝙽𝙶 [𝙻𝙸𝙽𝙺 𝚆𝙷𝙰𝚂𝚃𝙰𝙿𝙿]</a>
+        </article>
+        <article class="feature" tabindex="0">
+          <i class="fab fa-github"></i>
+          <h3>𝘍𝘙𝘖𝘒 𝘎𝘐𝘛𝘏𝘜𝘉 [ Repo ]</h3>
+          <p>Fully open source and community-driven for transparency and innovation.</p>
+          <a href="https://github.com/SOLO-LEVELING-IN-RUKSHAN/SOLO-LEVELING-V1" class="btn-link" aria-label="Go to GitHub Repository">𝙶𝙾 𝚃𝙾 𝙶𝙸𝚃𝙷𝚄𝙱 𝚁𝙴𝙿𝙾𝚂𝙸𝚃𝙾𝚁𝚈</a>
+        </article>
+        <article class="feature" tabindex="0">
+          <i class="fas fa-download"></i>
+          <h3>𝘉𝘖𝘛 𝘡𝘐𝘗 𝘋𝘖𝘞𝘕𝘓𝘖𝘈𝘋</h3>
+          <p>Get the latest versions quickly via trusted cloud download links.</p>
+          <a href="/download" class="btn-link" aria-label="Go to Download">𝙶𝙴𝚃 𝙳𝙾𝚆𝙽𝙻𝙾𝙰𝙳 📥</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="commands" class="bot-commands" aria-label="Bot Commands Section">
+      <h2>⛅ 𝐒𝐎𝐋𝐎 𝐋𝐄𝐕𝐄𝐋𝐈𝐍𝐆 𝐂𝐎𝐌𝐌𝐀𝐍𝐃 𝐂𝐀𝐓𝐄𝐆𝐎𝐑𝐔𝐄𝐒 📄</h2>
+      <div class="bot-commands-box">
+        <p>📜 ᴍɪɴᴇ ᴄᴀᴛᴇɢᴏʀɪᴇꜱ </p>
+        <pre><code class="language-markdown" id="commands-code">
+        🗂️  𝘔𝘐𝘕𝘌 𝘔𝘌𝘕𝘜 𝘊𝘈𝘛𝘌𝘎𝘖𝘙𝘐𝘌𝘚 🌍
+        
+╭─「 ᴍᴇɴᴜ ᴘᴀᴛᴛᴇʀɴꜱ 」
+┃ ┣❒ 1 ❱❱ 📥 ᴅᴏᴡɴʟᴏᴀᴅ ᴍᴇɴᴜ 
+┃ ┣❒ 2 ❱❱ 👥 ɢʀᴏᴜᴘ ᴍᴇɴᴜ 
+┃ ┣❒ 3 ❱❱ 🔎 ꜱᴇᴀʀᴄʜ ᴍᴇɴᴜ 
+┃ ┣❒ 4 ❱❱ 😂 ꜰᴜɴ ᴍᴇɴᴜ 
+┃ ┣❒ 5 ❱❱ 👤 ᴏᴡɴᴇʀ ᴍᴇɴᴜ 
+┃ ┣❒ 6 ❱❱ 🤖 ᴀɪ ᴍᴇɴᴜ 
+┃ ┣❒ 7 ❱❱ ⚡ ᴀɴɪᴍᴀ ᴍᴇɴᴜ 
+┃ ┣❒ 8 ❱❱ 🌀 ᴄᴏɴᴠᴇʀᴛ ᴍᴇɴᴜ 
+┃ ┣❒ 9 ❱❱ 🚀 ᴏᴛʜᴇʀ ᴍᴇɴᴜ 
+┃ ┣❒ 10 ❱❱ 👀 ʀᴇᴀᴄᴛɪᴏɴ ᴍᴇɴᴜ 
+┃ ┣❒ 11❱❱ 🍀 ᴍᴀɪɴ ᴍᴇɴᴜ 
+┃ ┣❒ 12 ❱❱ ⚙️ ꜱᴇᴛᴛɪɴɢ ᴍᴇɴᴜ
+┃ ┗❒ 13 ❱❱ 📰 ɴᴇᴡꜱ ᴍᴇɴᴜ
+╰───────────────●●►
+        </code></pre>
+        <button class="copy-btn" data-target="commands-code" aria-label="Copy Commands">𝘊ᴄᴏᴘʏ ɪᴛ ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ.</button>
+      </div>
+    </section>
+
+    <section id="download" class="download" aria-label="Download Section">
+      <h2>𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗 𝗦𝗢𝗟𝗢 𝗟𝗘𝗩𝗘𝗟𝗜𝗡𝗚 𝗭𝗜𝗣 𝗙𝗜𝗟𝗘</h2>
+      <p>Get the latest stable release and keep your session management effortless and secure.</p>
+      <a href="https://www.mediafire.com/file/s097mhph0ylhbe7/SOLO-LEVELING-V4_New_%2528_group_not_working_fix_%25E2%259C%2593%2529.zip/file" target="_blank" class="btn-primary" aria-label="Download SOLO LEVELING ZIP">
+        𝙳𝙾𝚆𝙽𝙻𝙾𝙰𝙳 𝙽𝙾𝚆 <i class="fas fa-download" aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <section id="deploy" class="download" aria-label="Deploy Code">
+      <h2>⛅ 𝗚𝗜𝗧𝗛𝗨𝗕 𝗪𝗢𝗥𝗠𝗙𝗟𝗢𝗪 𝗖𝗢𝗗𝗘 🐈‍⬛</h2>
+      <p>𝙶𝙸𝚃𝙷𝚄𝙱 𝚆𝙾𝚁𝙺𝙵𝙻𝙾𝚆 𝙶𝙴𝚃 𝙳𝙴𝙻𝙻𝙾𝚈 𝙲𝙾𝙳𝙴 ☁</p>
+      <div class="bot-commands-box">
+        <pre><code class="language-yaml" id="workflow-code">
+name: Node.js CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install dependencies
+        run: npm install
+      - name: Start application
+        run: npm start
+        </code></pre>
+        <button class="copy-btn" data-target="workflow-code" aria-label="Copy Workflow Code">𝙶𝙴𝚃 𝙲𝙾𝙿𝚈 𝙲𝙾𝙳𝙴</button>
+      </div>
+    </section>
+
+    <section id="setup" class="setup-guide" aria-label="Setup Guide Section">
+      <h2>⛅ Solo Leveling Bot Setup Guide : How To Run SOLO LEVELING V1 On LINUX & VPS ⛅</h2>
+      <div class="step">
+        <h3>1. Update Ubuntu and Install Prerequisites / install kali linux</h3>
+        <p>Make sure your server is up to date and install curl, gnupg, and build tools:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd1">sudo apt update && sudo apt upgrade -y
+sudo apt install -y curl gnupg build-essential</code></pre>
+          <button class="copy-btn" data-target="cmd1" aria-label="Copy command 1">Copy</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>2. Install Node.js (LTS) and npm</h3>
+        <p>Fetch and install the NodeSource Node.js 18.x LTS repository and install node and npm:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd2">curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs</code></pre>
+          <button class="copy-btn" data-target="cmd2" aria-label="Copy command 2">Copy</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>3. Verify Installation</h3>
+        <p>Check installed versions of node and npm to ensure they're installed:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd3">node -v
+npm -v</code></pre>
+          <button class="copy-btn" data-target="cmd3" aria-label="Copy command 3">Copy</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>4. Clone the SOLO LEVELING Repository</h3>
+        <p>Download the latest source code from GitHub:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd4">git clone https://github.com/SOLO-LEVELING-IN-RUKSHAN/SOLO-LEVELING-V1.git
+cd SOLO-LEVELING-V1</code></pre>
+          <button class="copy-btn" data-target="cmd4" aria-label="Copy command 4">Copy</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>5. Install Dependencies</h3>
+        <p>Install required Node.js modules:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd5">npm install</code></pre>
+          <button class="copy-btn" data-target="cmd5" aria-label="Copy command 5">Copy</button>
+        </div>
+      </div>
+      <div class="step">
+        <h3>6. Start SOLO LEVELING</h3>
+        <p>Launch the application:</p>
+        <div class="code-wrapper">
+          <pre><code id="cmd6">npm start</code></pre>
+          <button class="copy-btn" data-target="cmd6" aria-label="Copy command 6">Copy</button>
+        </div>
+      </div>
+      <p>For more information, visit the <a href="https://github.com/SOLO-LEVELING-IN-RUKSHAN/SOLO-LEVELING-V1.git" target="_blank" rel="noopener">official GitHub repository</a>.</p>
+    </section>
+
+    <section id="markdown" class="markdown" aria-label="Bot Features Section">
+      <h2>𝗙𝗢𝗨𝗡𝗗𝗥 & 𝗛𝗘𝗟𝗣𝗘𝗥 🫂</h2>
+      <div class="markdown-box">
+        <p>𝗦𝗢𝗟𝗢 𝗟𝗘𝗩𝗘𝗟𝗨𝗡𝗚 𝗙𝗢𝗨𝗡𝗗𝗥 & 𝗖𝗢𝗗𝗘𝗥 & 𝗛𝗘𝗟𝗣𝗘𝗥 🙇‍♂️</p>
+        <pre><code class="language-markdown" id="markdown-code">
+   🗿  𝗦𝗢𝗟𝗢 𝗟𝗘𝗩𝗘𝗟𝗜𝗡𝗚 𝗙𝗢𝗨𝗡𝗗𝗥 🗿
+    
+ 🥷 𝚁𝙴𝙳 𝚂𝙰𝙼𝚄𝚁𝙰𝙸 𝚁𝚄𝙺𝚂𝙷𝙰𝙽 ( 𝚁𝚄𝙺𝙰 ) 
+ 
+     👨‍💻 𝗖𝗢𝗗𝗘𝗥 & 𝗛𝗘𝗟𝗣𝗘𝗥 👨‍💻
+
+ 🙇‍♂️ 𝙳𝙸𝙽𝚄 𝙸𝙳  ( Second Owner )
+ 
+ 👥 ᴊᴏꜱʜᴜᴡᴀ
+ 👥 ꜱᴜʟᴀᴋꜱʜᴀɴᴀ 
+ 👥 ʀᴇᴘᴀ
+ 👥 ᴀꜱʜᴜ
+ 
+[ ⛅ 𝚃𝙴𝙼 𝙱𝚈 𝙻𝙴𝙶𝙸𝙾𝙽 𝙾𝙵 𝙳𝙾𝙾𝙼 ⛅ ]
+
+        </code></pre>
+        <button class="copy-btn" data-target="markdown-code" aria-label="Copy Features">𝘊ᴄᴏᴘʏ ɪᴛ ɪꜰ ʏᴏᴜ ᴡᴀɴᴛ 🥹</button>
+      </div>
+    </section>
+
+    <section id="about" class="about" aria-label="About Section">
+      <h2>🙇‍♂️ 𝘼𝘽𝙊𝙐𝙏 𝙍𝙐𝙆𝙎𝙃𝘼𝙉 🙇‍♂️</h2>
+      <div class="bot-image-container">
+        <img src="https://files.catbox.moe/imj9c7.jpeg" alt="Rukshan" class="about-image">
+      </div>
+      <p>I am a tech enthusiast with a strong passion for innovation and modern technology. After completing my O/L examinations, I pursued and successfully completed an IT course, earning multiple certifications. I have gained professional experience working in the IT department of a private company and am currently studying for a Diploma in Cyber Security and IT.</p>
+      <p>I specialize in developing JavaScript-based WhatsApp bots, designing websites, and exploring advanced AI-powered solutions to create impactful and creative digital tools.</p>
+    </section>
+
+    <section id="contact" class="contact" aria-label="Contact Section">
+      <h2>𝘊𝘖𝘕𝘛𝘈𝘊𝘛 𝘔𝘌 🌍</h2>
+      <p>Reach out to me for inquiries, collaborations, or support:</p>
+      <div class="contact-links">
+        <a href="https://wa.me/+94774589636" target="_blank" rel="noopener" aria-label="WhatsApp Contact">𝘞𝘏𝘈𝘛𝘚𝘈𝘗𝘗 <i class="fab fa-whatsapp"></i></a>
+        <a href="https://github.com/SOLO-LEVELING-IN-RUKSHAN/SOLO-LEVELING-V1" target="_blank" rel="noopener" aria-label="GitHub Repository">𝘎𝘐𝘛𝘏𝘜𝘉 <i class="fab fa-github"></i></a>
+        <a href="https://t.me/legion_of_doom_2050" target="_blank" rel="noopener" aria-label="YouTube Channel">𝘛𝘌𝘓𝘌𝘎𝘙𝘈𝘔 <i class="fab fa-telegram"></i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer id="footer" role="contentinfo">
+    <p>&copy; <span id="year"></span>© 2025 - 2030 MEDA BY RUKSHAN / SOLO-LEVELING SIMPLE WEB ></p>
+    <p>
+      <a href="https://github.com/SOLO-LEVELING-IN-RUKSHAN/SOLO-LEVELING-V1" target="_blank" rel="noopener" aria-label="GitHub Repository"><i class="fab fa-github" aria-hidden="true"></i></a>
+      <a href="https://wa.me/+94774589636" target="_blank" rel="noopener" aria-label="WhatsApp Contact"><i class="fab fa-whatsapp" aria-hidden="true"></i></a>
+      <a href="https://t.me/legion_of_doom_2050" target="_blank" rel="noopener" aria-label="YouTube Channel"><i class="fab fa-telegram" aria-hidden="true"></i></a>
+    </p>
+  </footer>
+
+  <div class="theme-toggle" aria-label="Toggle theme">
+    <i class="fas fa-moon"></i>
+  </div>
+
+  <div class="back-to-top" aria-label="Back to top">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <script>
+    function copyCode(targetId) {
+      const code = document.querySelector(`#${targetId}`)?.textContent;
+      if (code) {
+        navigator.clipboard.writeText(code).then(() => {
+          const button = document.querySelector(`.copy-btn[data-target="${targetId}"]`);
+          button.innerHTML = 'Copied!';
+          button.classList.add('copied');
+          button.disabled = true;
+          setTimeout(() => {
+            button.innerHTML = button.getAttribute('aria-label').replace('Copy ', '');
+            button.classList.remove('copied');
+            button.disabled = false;
+          }, 2000);
+        }).catch(() => {
+          alert('Failed to copy code. Please select manually.');
+        });
+      }
+    }
+
+    function typeText() {
+      const texts = [
+        "SOLO LEVELING V4", 
+        "ULTIMATE SESSION MANAGER", 
+        "EASY PAIRING", 
+        "OPEN SOURCE", 
+        "POWERED BY RUKSHAN"
+      ];
+      const typingElement = document.querySelector('#typing-text');
+      if (!typingElement) return;
+      let textIndex = 0;
+      let charIndex = 0;
+      let isTyping = true;
+
+      function updateText() {
+        const currentText = texts[textIndex];
+        typingElement.style.borderRight = '3px solid var(--secondary)';
+
+        if (isTyping) {
+          if (charIndex <= currentText.length) {
+            typingElement.textContent = currentText.substring(0, charIndex);
+            charIndex++;
+            setTimeout(updateText, 100);
+          } else {
+            typingElement.style.borderRight = 'none';
+            setTimeout(() => {
+              isTyping = false;
+              charIndex--;
+              updateText();
+            }, 1000);
+          }
+        } else {
+          if (charIndex >= 0) {
+            typingElement.textContent = currentText.substring(0, charIndex);
+            charIndex--;
+            setTimeout(updateText, 50);
+          } else {
+            isTyping = true;
+            charIndex = 0;
+            textIndex = (textIndex + 1) % texts.length;
+            setTimeout(updateText, 500);
+          }
+        }
+      }
+
+      updateText();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Loader
+      const loader = document.getElementById('loader');
+      if (loader) {
+        gsap.to(loader, {
+          opacity: 0,
+          duration: 0.5,
+          delay: 4,
+          onComplete: () => loader.classList.add('hidden'),
+        });
+      }
+
+      // Deploy Ad
+      const deployAd = document.getElementById('deploy-ad');
+      const skipBtn = document.getElementById('skip-btn');
+      const countdownSpan = document.getElementById('countdown');
+      if (deployAd && skipBtn && countdownSpan) {
+        deployAd.classList.add('show');
+        let countdown = 10;
+        skipBtn.disabled = true;
+        const countdownInterval = setInterval(() => {
+          countdown--;
+          countdownSpan.textContent = countdown;
+          if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            skipBtn.disabled = false;
+            skipBtn.classList.add('active');
+            countdownSpan.textContent = '';
+            skipBtn.textContent = 'Skip';
+          }
+        }, 1000);
+        skipBtn.addEventListener('click', () => {
+          if (!skipBtn.disabled) {
+            deployAd.classList.remove('show');
+            setTimeout(() => {
+              deployAd.style.display = 'none';
+            }, 500);
+          }
+        });
+      }
+
+      // Typing effect
+      typeText();
+
+      // Audio controls
+      const audio = document.getElementById('background-audio');
+      const playBtn = document.querySelector('.play-btn');
+      const pauseBtn = document.querySelector('.pause-btn');
+      const stopBtn = document.querySelector('.stop-btn');
+      const volumeSlider = document.querySelector('.volume-slider');
+      const songSelect = document.getElementById('song-select');
+      const themeToggleBtn = document.querySelector('.theme-toggle-btn');
+
+      if (audio && playBtn && pauseBtn && stopBtn && volumeSlider && songSelect && themeToggleBtn) {
+        // Set initial volume
+        audio.volume = volumeSlider.value;
+
+        // Play button
+        playBtn.addEventListener('click', () => {
+          audio.play().catch(() => {
+            document.addEventListener('click', () => audio.play(), { once: true });
+          });
+          playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          stopBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        });
+
+        // Pause button
+        pauseBtn.addEventListener('click', () => {
+          audio.pause();
+          playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          stopBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        });
+
+        // Stop button
+        stopBtn.addEventListener('click', () => {
+          audio.pause();
+          audio.currentTime = 0;
+          playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+          stopBtn.innerHTML = '<i class="fas fa-stop"></i>';
+        });
+
+        // Volume control
+        volumeSlider.addEventListener('input', () => {
+          audio.volume = volumeSlider.value;
+        });
+
+        // Song selection
+        songSelect.addEventListener('change', () => {
+          audio.src = songSelect.value;
+          audio.play().catch(() => {
+            document.addEventListener('click', () => audio.play(), { once: true });
+          });
+          playBtn.innerHTML = '<i class="fas fa-play"></i>';
+          pauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        });
+
+        // Theme toggle button
+        let isDark = true;
+        themeToggleBtn.addEventListener('click', () => {
+          isDark = !isDark;
+          document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+          themeToggleBtn.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.body.setAttribute('data-theme', savedTheme);
+          isDark = savedTheme === 'dark';
+          themeToggleBtn.innerHTML = isDark ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        }
+      } else {
+        console.error('Audio controls or song select not found');
+      }
+
+      // Hamburger menu
+      const hamburger = document.querySelector('.hamburger');
+      const mobileMenu = document.getElementById('mobile-menu');
+
+      function closeMobileMenu() {
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        mobileMenu.classList.remove('open');
+        mobileMenu.querySelectorAll('a').forEach(link => link.tabIndex = -1);
+        mobileMenu.setAttribute('aria-hidden', 'true');
+      }
+
+      function openMobileMenu() {
+        hamburger.classList.add('active');
+        hamburger.setAttribute('aria-expanded', 'true');
+        mobileMenu.classList.add('open');
+        mobileMenu.querySelectorAll('a').forEach(link => link.tabIndex = 0);
+        mobileMenu.setAttribute('aria-hidden', 'false');
+      }
+
+      hamburger.addEventListener('click', () => {
+        const expanded = hamburger.getAttribute('aria-expanded') === 'true';
+        if (expanded) {
+          closeMobileMenu();
+        } else {
+          openMobileMenu();
+        }
+      });
+
+      mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          closeMobileMenu();
+        });
+      });
+
+      document.addEventListener('click', e => {
+        if (mobileMenu.classList.contains('open') &&
+            !mobileMenu.contains(e.target) &&
+            !hamburger.contains(e.target)) {
+          closeMobileMenu();
+        }
+      });
+
+      // Theme toggle
+      const themeToggle = document.querySelector('.theme-toggle');
+      if (themeToggle) {
+        themeToggle.style.display = 'none'; // Hide the original theme toggle
+      }
+
+      // Back to top
+      const backToTop = document.querySelector('.back-to-top');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      });
+
+      backToTop.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      // Visitor Counter
+      const visitorCountElement = document.getElementById('visitor-count');
+      if (visitorCountElement) {
+        let visitorCount = localStorage.getItem('visitorCount') || 0;
+        visitorCount = parseInt(visitorCount) + 1;
+        localStorage.setItem('visitorCount', visitorCount);
+        visitorCountElement.textContent = visitorCount;
+      }
+
+      // Particle Animation
+      const canvas = document.getElementById('particleCanvas');
+      const ctx = canvas?.getContext('2d');
+      if (canvas && ctx) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 100;
+
+        class Particle {
+          constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 5 + 1;
+            this.speedX = Math.random() * 2 - 1;
+            this.speedY = Math.random() * 2 - 1;
+          }
+
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.size > 0.2) this.size -= 0.1;
+            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+          }
+
+          draw() {
+            ctx.fillStyle = 'rgba(0, 183, 235, 0.8)';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        function initParticles() {
+          for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+          }
+        }
+
+        function animateParticles() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            particles[i].draw();
+            for (let j = i; j < particles.length; j++) {
+              const dx = particles[i].x - particles[j].x;
+              const dy = particles[i].y - particles[j].y;
+              const distance = Math.sqrt(dx * dx + dy * dy);
+              if (distance < 100) {
+                ctx.beginPath();
+                ctx.strokeStyle = 'rgba(0, 183, 235, 0.2)';
+                ctx.lineWidth = 1;
+                ctx.moveTo(particles[i].x, particles[i].y);
+                ctx.lineTo(particles[j].x, particles[j].y);
+                ctx.stroke();
+              }
+            }
+            if (particles[i].size <= 0.2) {
+              particles.splice(i, 1);
+              i--;
+              particles.push(new Particle());
+            }
+          }
+          requestAnimationFrame(animateParticles);
+        }
+
+        initParticles();
+        animateParticles();
+
+        window.addEventListener('resize', () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        });
+      }
+
+      // Intersection Observer for fade in sections
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.25 });
+
+      document.querySelectorAll('section, header.hero').forEach(el => observer.observe(el));
+
+      // Copy buttons
+      document.querySelectorAll('.copy-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const targetId = button.getAttribute('data-target');
+          copyCode(targetId);
+        });
+      });
+
+      // Update footer year
+      document.getElementById('year').textContent = new Date().getFullYear();
+    });
+  </script>
+</body>
+</html>
